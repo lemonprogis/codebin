@@ -1,78 +1,33 @@
-from models import *
-from django.views.generic import list_detail
-from forms import *
-from django.http import HttpResponseRedirect
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponse, HttpResponseNotFound
+from django.contrib.auth.models import User
+from django.forms.models import model_to_dict
+from forms import *
+from models import *
+import datetime,json
+from django.core import serializers
 
-ITEMS_PER_PAGE = 2    
+###################################
+## register views 
+###################################
+def register_user(request):
+	if request.method == 'POST':
+		form = RegistrationForm(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			obj = form.save(commit=False)
+			user = User.objects.create_user(cd['username'],cd['email'],cd['password'])
+			form.save()
+			user.save()
+			user_login = authenticate(username=cd['username'],password=cd['password'])
+			if user_login is not None:
+				if user_login.is_active:
+					login(request,user_login)
+					return redirect('/codebin/whiteboard/')
+	else:
+		form = RegistrationForm()
+	return render(request,'index.html',{'reg_form': form, })
 
-def msg_list_page(request):
-    return list_detail.object_list(
-        request,
-        queryset = Msg.objects.order_by('-id'),
-        paginate_by = ITEMS_PER_PAGE,
-        template_name = 'msg_list_page.html',
-        template_object_name = 'msg'
-    )
-
-def register_page(request):
-    if request.method == 'POST':
-        error = {'success':'','error':''}
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = User.objects.create_user(
-                username = form.cleaned_data['username'],
-                password = form.cleaned_data['password1'],
-                email = form.cleaned_data['email']
-            )
-        else:     
-            return HttpResponseRedirect('/accounts/register/fail/')
-        return HttpResponseRedirect('/accounts/register/success/')
-    else:
-        form = RegistrationForm()
-
-        variables = RequestContext(request,{'form':form})
-        return render_to_response('registration/register.html',variables)
-
-@login_required
-def msg_post_page(request):
-    if request.method == 'POST':
-        form = MsgPostForm(request.POST)
-        if form.is_valid():
-            newmessage = Msg(
-                title=form.cleaned_data['title'],
-                content = form.cleaned_data['content'],
-                user = request.user,
-                ip = request.META['REMOTE_ADDR'])
-            newmessage.save()
-            return HttpResponseRedirect('/')
-    else:
-        form = MsgPostForm()
-        variables = RequestContext(request,{'form':form})
-        return render_to_response('msg_post_page.html',variables)
-
-def user_msg_list_page(request,username):
-    user = get_object_or_404(User,username=username)
-    return list_detail.object_list(
-        request,
-        queryset=user.msg_set.order_by('-id'),
-        paginate_by=ITEMS_PER_PAGE,
-        template_name='user_msg_list_page.html',
-        template_object_name='msg',
-        extra_context={'username':username}
-    )
-
-def msg_detail_page(request,message_id):
-    msg = get_object_or_404(Msg,id=message_id)
-    msg.clickcount += 1
-    msg.save()
-    return list_detail.object_detail(
-        request,
-        queryset=Msg.objects.all(),
-        object_id=message_id,
-        template_name='msg_detail_page.html',
-        template_object_name='msg'
-    )

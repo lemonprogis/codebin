@@ -8,9 +8,6 @@ class Message(models.Model):
 	datetime = models.DateTimeField(auto_now_add=True)
 	votes = models.IntegerField(default=0)
 
-	def __str__(self):
-		return "%s" % (self.title)
-
 	def __unicode__(self):
-		return "%s" (self.title)
+		return "%s" % (self.title)
 
