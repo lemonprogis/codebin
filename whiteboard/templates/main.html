@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load url from future %}
+{% block title %}Whiteboard | Home{% endblock%}
+{% block content %}
+	{% for msg in messages%}
+	<div class="row">
+		<div class="col-md-1">
+			<a href=""><div class="up-image"></div></a>
+			<h3>{{msg.votes}}</h3>
+			<a href=""><div class="down-image"></div></a>
+		</div>
+		<div class="col-md-8">
+			<h4><a href="/whiteboard/{{msg.pk}}">{{ msg.title}}</a></h4>
+			<p>Posted by: <a href="/whiteboard/users/{{msg.user.username}}">{{msg.user.username}}</a> at {{msg.datetime}} Language: <a href="/whiteboard/filter/{{msg.language}}">{{msg.language}}</a></p>
+		</div>
+	</div>
+	{% endfor %}
+{% endblock %}

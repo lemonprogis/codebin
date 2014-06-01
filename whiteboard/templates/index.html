@@ -3,7 +3,6 @@
 {% block title %}Registration{% endblock %}
 
 {% block content %}
-	{% include 'user_panel.html' %}
 	{% if reg_form.errors %}
 		<p style="color: red;">
                 Please correct the error{{ reg_form.errors|pluralize }} below.
@@ -11,10 +10,9 @@
 	{% endif %}
 	<form method="post" action="">
 		{% csrf_token %}
-    	<table>
-        	{{ reg_form }}
-    	</table>
-    	<input type="submit" value="Register" />
-		<input type="hidden" name="next" value="{{ next }}" />
+        <table>
+        	{{ reg_form.as_table}}
+        </table>
+    	<input type="submit" value="Create Account" />
     </form>
 {% endblock %}

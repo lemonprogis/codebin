@@ -6,6 +6,6 @@ class MessageAdmin(admin.ModelAdmin):
 	list_display = ('title','user','datetime','votes')
 	list_filter=('user',)
 	ordering = ('-id',)
-	search_fields = ('title',)
+	search_fields = ('title','language',)
 
 admin.site.register(Message,MessageAdmin)
