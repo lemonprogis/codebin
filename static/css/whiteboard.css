@@ -3,5 +3,6 @@ body {
 }
 
 .up-image {
-	background: url("../img/up.png");
+	width: 50px;
+	height: 40px;
 }

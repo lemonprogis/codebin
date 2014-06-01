@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from forms import *
 from models import *
 import datetime,json
@@ -41,9 +42,21 @@ def post_message(request):
 
 
 # main view
-def home_view(request):
-	messages = Message.objects.all()
-	return render(request,'main.html', {'messages':messages})
+def home_view(request,filter_type=None):
+	if filter_type is None:
+		messages = Message.objects.all()
+	elif filter_type == 'latest':
+		messages = Message.objects.all().order_by('-datetime')
+	paginator = Paginator(messages, 25)
+	page = request.GET.get('page')
+	try:
+		msgs = paginator.page(page)
+	except PageNotAnInteger:
+		msgs = paginator.page(1)
+	except EmptyPage:
+		msgs = paginator.page(paginator.num_pages) 
+	return render(request,'main.html', {'messages':msgs})
+
 
 def view_message(request, id):
 	message = Message.objects.filter(pk=id)[0]

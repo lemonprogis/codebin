@@ -2,6 +2,7 @@ body {
 	padding-top: 50px;
 }
 
-.greeting {
-	color: white;
+.up-image {
+	background: url("../img/up.png");
+	background-size: 100%;
 }
