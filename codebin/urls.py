@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+from django.http import HttpResponseRedirect
 from whiteboard.views import *
 from django.contrib import admin
 admin.autodiscover()
@@ -6,6 +7,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
 	url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^$', lambda r : HttpResponseRedirect('home/')),
     url(r'^home/$', 'whiteboard.views.home_view'),
     url(r'^home/(?P<filter_type>[\w ]+)/$','whiteboard.views.home_view'),
     url(r'^whiteboard/(?P<id>\d+)/$','whiteboard.views.view_message'),

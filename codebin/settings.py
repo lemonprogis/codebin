@@ -1,4 +1,4 @@
-# Django settings for codebin project.
+#!/usr/bin/env python
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
